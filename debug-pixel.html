@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Facebook Pixel</title>
+</head>
+<body>
+    <h1>Debug Facebook Pixel</h1>
+    <button onclick="testPixel()">Testar Pixel</button>
+    <div id="result"></div>
+
+    <!-- Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1822278489164552');
+    fbq('track', 'PageView');
+    </script>
+    <!-- End Meta Pixel Code -->
+
+    <script>
+    function testPixel() {
+        const result = document.getElementById('result');
+        
+        // Verificar se fbq está disponível
+        if (typeof fbq !== 'undefined') {
+            result.innerHTML = '<p style="color: green;">✅ Facebook Pixel carregado com sucesso!</p>';
+            
+            // Testar evento
+            fbq('track', 'ViewContent', {
+                content_name: 'Teste Debug',
+                content_category: 'Test'
+            });
+            
+            result.innerHTML += '<p style="color: green;">✅ Evento ViewContent enviado!</p>';
+            
+            // Verificar se o pixel está ativo
+            if (window.fbq && window.fbq.loaded) {
+                result.innerHTML += '<p style="color: green;">✅ Pixel está ativo e funcionando!</p>';
+            } else {
+                result.innerHTML += '<p style="color: red;">❌ Pixel não está ativo</p>';
+            }
+        } else {
+            result.innerHTML = '<p style="color: red;">❌ Facebook Pixel não foi carregado</p>';
+        }
+        
+        // Log adicional
+        console.log('fbq disponível:', typeof fbq !== 'undefined');
+        console.log('fbq loaded:', window.fbq && window.fbq.loaded);
+        console.log('Pixel ID:', '1822278489164552');
+    }
+    </script>
+</body>
+</html>
