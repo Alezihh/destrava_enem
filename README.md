@@ -1,74 +1,130 @@
-# Welcome to your Lovable project
+# 🚀 Destrava ENEM
 
-## Project info
+Landing page moderna e responsiva para o **Destrava ENEM** - uma plataforma de IA que ajuda estudantes a superar bloqueios emocionais e conquistar a nota 1000 no ENEM.
 
-**URL**: https://lovable.dev/projects/7d6a2dcf-d560-4ecf-85ad-1f4ca15248a1
+## ✨ Características
 
-## How can I edit this code?
+- **🤖 IA Poderosa**: Ferramenta de inteligência artificial que identifica e trabalha bloqueios emocionais
+- **📚 +400 Resumos**: Material completo de todas as matérias do ENEM
+- **💪 Superação de Medos**: Técnicas comprovadas para vencer ansiedade e medo
+- **📝 Apoio em Redação**: IA especializada para ajudar com o terror de muitos estudantes
+- **🎯 Mentalidade Vencedora**: Desenvolve confiança e atitude de aprovado
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias Utilizadas
 
-**Use Lovable**
+- **React 18** - Framework JavaScript moderno
+- **TypeScript** - Tipagem estática para JavaScript
+- **Vite** - Build tool rápido e moderno
+- **Tailwind CSS** - Framework CSS utilitário
+- **Shadcn/ui** - Componentes acessíveis e modernos
+- **Radix UI** - Primitivos de UI acessíveis
+- **Lucide React** - Ícones modernos
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/7d6a2dcf-d560-4ecf-85ad-1f4ca15248a1) and start prompting.
+## 📊 Tracking e Analytics
 
-Changes made via Lovable will be committed automatically to this repo.
+- **Facebook Pixel** - Rastreamento de conversões
+- **Conversions API** - Envio server-side de eventos
+- **Eventos Rastreados**:
+  - PageView
+  - ViewContent
+  - InitiateCheckout
 
-**Use your preferred IDE**
+## 🚀 Como Executar
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Pré-requisitos
+- Node.js 18+ 
+- npm ou yarn
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### Instalação
+```bash
+# Clone o repositório
+git clone https://github.com/seu-usuario/destrava-enem.git
 
-Follow these steps:
+# Entre no diretório
+cd destrava-enem
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Instale as dependências
+npm install
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Execute o projeto
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+### Scripts Disponíveis
+```bash
+npm run dev      # Servidor de desenvolvimento
+npm run build    # Build de produção
+npm run preview  # Preview do build
+npm run lint     # Verificar código
+```
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📱 Responsividade
 
-**Use GitHub Codespaces**
+O projeto é totalmente responsivo e otimizado para:
+- 📱 Mobile (320px+)
+- 📱 Tablet (768px+)
+- 💻 Desktop (1024px+)
+- 🖥️ Large screens (1440px+)
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎨 Design System
 
-## What technologies are used for this project?
+- **Cores**: Gradientes vibrantes com foco em conversão
+- **Tipografia**: Hierarquia clara e legível
+- **Componentes**: Reutilizáveis e acessíveis
+- **Animações**: Transições suaves e engajantes
 
-This project is built with:
+## 📈 Performance
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- ⚡ **Vite** para build ultra-rápido
+- 🎯 **Code splitting** automático
+- 📦 **Tree shaking** para bundle otimizado
+- 🖼️ **Lazy loading** de imagens
 
-## How can I deploy this project?
+## 🔧 Configuração do Pixel
 
-Simply open [Lovable](https://lovable.dev/projects/7d6a2dcf-d560-4ecf-85ad-1f4ca15248a1) and click on Share -> Publish.
+O projeto inclui configuração completa do Facebook Pixel:
 
-## Can I connect a custom domain to my Lovable project?
+```javascript
+// ID do Pixel
+const PIXEL_ID = '1822278489164552';
 
-Yes, you can!
+// Eventos implementados
+- PageView
+- ViewContent  
+- InitiateCheckout
+```
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📁 Estrutura do Projeto
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
-# Teste de deploy automático - Thu Oct 16 17:58:22 -03 2025
+```
+src/
+├── components/ui/     # Componentes base (Shadcn/ui)
+├── pages/            # Páginas da aplicação
+├── lib/              # Utilitários e APIs
+├── hooks/            # Custom hooks
+└── assets/           # Imagens e recursos
+```
+
+## 🚀 Deploy
+
+O projeto está configurado para deploy na **Vercel**:
+
+```bash
+# Build de produção
+npm run build
+
+# Preview local
+npm run preview
+```
+
+## 📄 Licença
+
+Este projeto é propriedade do **Destrava ENEM** e está protegido por direitos autorais.
+
+## 🤝 Contribuição
+
+Este é um projeto proprietário. Para sugestões ou melhorias, entre em contato.
+
+---
+
+**Desenvolvido com ❤️ para ajudar estudantes a conquistarem seus sonhos!**
