@@ -358,7 +358,7 @@ const Index = () => {
 
                 <ul className="space-y-3 mb-6">
                   {[
-                    "Acesso a ferramenta de IA",
+                    "Acesso a todos os +400 resumos em PDF",
                   ].map((item, index) => (
                     <li key={index} className="flex items-start gap-3">
                       <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
@@ -375,7 +375,7 @@ const Index = () => {
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span>•</span>
-                      <span>Acesso a todos os +400 resumos em PDF</span>
+                      <span>Acesso à ferramenta de IA</span>
                     </li>
                   </ul>
                 </div>
