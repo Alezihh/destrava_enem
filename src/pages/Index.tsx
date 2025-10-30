@@ -52,7 +52,7 @@ const Index = () => {
                 🔥 Promoção por Tempo Limitado!
               </Badge>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-primary-foreground mb-4 sm:mb-6 leading-tight px-1 sm:px-0">
-                Destrava ENEM Vença os Bloqueios que te Impedem de Passar
+                Destrave no ENEM com +400 resumos e IA que vai te ajudar do início ao fim
               </h1>
               <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-primary-foreground/90 mb-6 sm:mb-8 leading-relaxed px-2 sm:px-0">
                 Uma IA poderosa que destranca seus bloqueios emocionais para você:
@@ -129,8 +129,8 @@ const Index = () => {
               },
               {
                 icon: <BookOpen className="w-8 h-8" />,
-                title: "Suporte Emocional 24/7",
-                description: "Sempre que precisar, a IA está lá para te apoiar, acalmar e motivar nos momentos difíceis.",
+                title: "400 resumos",
+                description: "400 resumos diretos ao ponto — o atalho para sua aprovação.",
               },
               {
                 icon: <Trophy className="w-8 h-8" />,
@@ -259,6 +259,7 @@ const Index = () => {
               </h2>
               <ul className="space-y-4 mb-8">
                 {[
+                  "400 resumos essenciais para quem busca a aprovação de verdade.",
                   "IA que conversa com você e entende seus bloqueios",
                   "Técnicas comprovadas para vencer ansiedade e medo",
                   "Ajuda personalizada em TODAS as matérias do ENEM",
