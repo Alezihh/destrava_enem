@@ -386,7 +386,7 @@ const Index = () => {
                   className="w-full hover:scale-105 transition-transform duration-300 text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
                     trackPurchaseClick('basic', 9.99);
-                    window.open('https://pay.hub.la/wWnIhKKXe3bKUIZnjZeb', '_blank');
+                    window.open('https://pay.kirvano.com/ac56884e-534b-4a6d-9cf3-5b07751dc23f', '_blank');
                   }}
                 >
                   COMPRAR AGORA
@@ -484,7 +484,7 @@ const Index = () => {
                   className="w-full hover:scale-110 transition-transform duration-300 shadow-glow text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
                     trackPurchaseClick('complete', 19.90);
-                    window.open('https://pay.hub.la/yJKNWFAJIgvYRrqhdYbo', '_blank');
+                    window.open('https://pay.kirvano.com/5b48cfd1-b093-4f1d-9969-e49c5d96da26', '_blank');
                   }}
                 >
                   COMPRAR AGORA
