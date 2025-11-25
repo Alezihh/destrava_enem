@@ -1,7 +1,7 @@
 // Facebook Conversions API
 // IMPORTANTE: Este token pode expirar. Verifique no Facebook Business Manager
-const ACCESS_TOKEN = 'EAAeJDc0VuZCsBPoqtCvVYaJZAn1wFlPev26IQVaPtbGen8iRT5zjZBavyzGE8ZCVZC9BVhwdZCzhAAzv9VCpAuBrFGp77ZAdk9ZC6K7uS8jefTrscRX8PTUWXHfIf08bXEag9nS8wU5oUQmYaALlt8xjlKhkgPJVsZAoyu4rTZAZAA7tN0AZBZAS2Ywx3NyzfggYHSL3PvQZDZD';
-const PIXEL_ID = '1822278489164552';
+const ACCESS_TOKEN = 'EAAQxPpZAWT1sBQB0sdj3eMor2kDEv3aklyy8SKHPHCEjuQWKHeDYuA8MvqDQLeR66RY1cZALykJZATQgMUfKQMZC5qgfjnqldWYjvrcVWVh23uN9tgFvFxoNV93FnIRCuclEhTSSxX1aWfyup3gdioyZCw0dLhWpHQQ3d2BGXpDr50SCuqLodCtWjzxUcGbIsggZDZD';
+const PIXEL_ID = '845736898104589';
 
 // Função para hash de email (SHA256)
 async function hashEmail(email: string): Promise<string> {
