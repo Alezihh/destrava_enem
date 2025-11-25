@@ -3,10 +3,6 @@
 const ACCESS_TOKEN = 'EAAQxPpZAWT1sBQB0sdj3eMor2kDEv3aklyy8SKHPHCEjuQWKHeDYuA8MvqDQLeR66RY1cZALykJZATQgMUfKQMZC5qgfjnqldWYjvrcVWVh23uN9tgFvFxoNV93FnIRCuclEhTSSxX1aWfyup3gdioyZCw0dLhWpHQQ3d2BGXpDr50SCuqLodCtWjzxUcGbIsggZDZD';
 const PIXEL_ID = '845736898104589';
 
-// TikTok Conversions API
-const TIKTOK_ACCESS_TOKEN = 'f5379a926a1c0f3fc5c9af69aed5cf56e18715ea';
-const TIKTOK_PIXEL_ID = 'D4IQ403C77UBQQ2RBCVG';
-
 // Função para hash de email (SHA256)
 async function hashEmail(email: string): Promise<string> {
   const encoder = new TextEncoder();
@@ -25,7 +21,7 @@ async function hashPhone(phone: string): Promise<string> {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Função para enviar evento de conversão (Facebook)
+// Função para enviar evento de conversão
 export async function sendConversionEvent(
   eventName: string,
   value: number,
@@ -69,75 +65,35 @@ export async function sendConversionEvent(
     });
 
     if (!response.ok) {
-      console.error('Erro ao enviar evento de conversão (Facebook):', await response.text());
+      console.error('Erro ao enviar evento de conversão:', await response.text());
     } else {
-      console.log('Evento de conversão enviado com sucesso (Facebook):', eventName);
+      console.log('Evento de conversão enviado com sucesso:', eventName);
     }
   } catch (error) {
-    console.error('Erro ao enviar evento de conversão (Facebook):', error);
-  }
-}
-
-// Função para enviar evento de conversão (TikTok)
-export async function sendTikTokConversionEvent(
-  eventName: string,
-  value: number,
-  currency: string = 'BRL',
-  email?: string,
-  phone?: string
-) {
-  try {
-    const userData: any = {};
-    
-    if (email) {
-      userData.email = [await hashEmail(email)];
-    }
-    
-    if (phone) {
-      userData.phone_number = [await hashPhone(phone)];
-    }
-
-    const payload = {
-      pixel_code: TIKTOK_PIXEL_ID,
-      event: eventName,
-      event_id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      timestamp: new Date().toISOString(),
-      context: {
-        page: {
-          url: typeof window !== 'undefined' ? window.location.href : '',
-        },
-        user: userData,
-      },
-      properties: {
-        value: value,
-        currency: currency,
-      }
-    };
-
-    const response = await fetch('https://business-api.tiktok.com/open_api/v1.3/event/track/', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Token': TIKTOK_ACCESS_TOKEN
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erro ao enviar evento de conversão (TikTok):', errorText);
-    } else {
-      console.log('Evento de conversão enviado com sucesso (TikTok):', eventName);
-    }
-  } catch (error) {
-    console.error('Erro ao enviar evento de conversão (TikTok):', error);
+    console.error('Erro ao enviar evento de conversão:', error);
   }
 }
 
 // Função para rastrear clique no botão de compra
 export function trackPurchaseClick(planType: 'basic' | 'complete', value: number) {
   console.log('🛒 Debug: trackPurchaseClick chamado', { planType, value });
-  // Eventos de tracking removidos
+  
+  // Rastrear no pixel do Facebook
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    console.log('✅ Enviando InitiateCheckout para Facebook Pixel');
+    (window as any).fbq('track', 'InitiateCheckout', {
+      content_name: `Enem Nota Mil ${planType === 'basic' ? 'Básico' : 'Completo'}`,
+      content_category: 'Education',
+      value: value,
+      currency: 'BRL'
+    });
+  } else {
+    console.error('❌ Facebook Pixel não está disponível para trackPurchaseClick');
+  }
+
+  // Enviar para Conversions API
+  console.log('📡 Enviando para Conversions API');
+  sendConversionEvent('InitiateCheckout', value, 'BRL');
 }
 
 // Função para rastrear visualização da página
@@ -151,11 +107,6 @@ export function trackPageView() {
     (window as any).fbq('track', 'PageView');
   } else {
     console.error('❌ Facebook Pixel não está disponível');
-  }
-
-  // TikTok Pixel já rastreia PageView automaticamente no carregamento, mas podemos garantir
-  if (typeof window !== 'undefined' && (window as any).ttq) {
-    console.log('✅ TikTok Pixel disponível (PageView já foi enviado automaticamente)');
   }
 }
 
@@ -171,17 +122,6 @@ export function trackViewContent(contentName: string) {
     });
   } else {
     console.error('❌ Facebook Pixel não está disponível para trackViewContent');
-  }
-
-  // Rastrear no TikTok Pixel
-  if (typeof window !== 'undefined' && (window as any).ttq) {
-    console.log('✅ Enviando ViewContent para TikTok Pixel');
-    (window as any).ttq.track('ViewContent', {
-      content_name: contentName,
-      content_category: 'Education'
-    });
-  } else {
-    console.error('❌ TikTok Pixel não está disponível para trackViewContent');
   }
 }
 
@@ -227,10 +167,9 @@ export function ensurePixelLoaded() {
   }, 3000);
 }
 
-// Declaração global para o fbq e ttq
+// Declaração global para o fbq
 declare global {
   interface Window {
     fbq: any;
-    ttq: any;
   }
 }
