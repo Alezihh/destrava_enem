@@ -2,6 +2,7 @@
 // IMPORTANTE: Este token pode expirar. Verifique no Facebook Business Manager
 const ACCESS_TOKEN = 'EAAQxPpZAWT1sBQB0sdj3eMor2kDEv3aklyy8SKHPHCEjuQWKHeDYuA8MvqDQLeR66RY1cZALykJZATQgMUfKQMZC5qgfjnqldWYjvrcVWVh23uN9tgFvFxoNV93FnIRCuclEhTSSxX1aWfyup3gdioyZCw0dLhWpHQQ3d2BGXpDr50SCuqLodCtWjzxUcGbIsggZDZD';
 const PIXEL_ID = '845736898104589';
+const PIXEL_ID_OLD = '1822278489164552'; // Pixel antigo
 
 // Função para hash de email (SHA256)
 async function hashEmail(email: string): Promise<string> {
@@ -78,15 +79,18 @@ export async function sendConversionEvent(
 export function trackPurchaseClick(planType: 'basic' | 'complete', value: number) {
   console.log('🛒 Debug: trackPurchaseClick chamado', { planType, value });
   
-  // Rastrear no pixel do Facebook
+  // Rastrear no pixel do Facebook (ambos os pixels)
   if (typeof window !== 'undefined' && (window as any).fbq) {
     console.log('✅ Enviando InitiateCheckout para Facebook Pixel');
-    (window as any).fbq('track', 'InitiateCheckout', {
+    const eventData = {
       content_name: `Enem Nota Mil ${planType === 'basic' ? 'Básico' : 'Completo'}`,
       content_category: 'Education',
       value: value,
       currency: 'BRL'
-    });
+    };
+    // Enviar para ambos os pixels
+    (window as any).fbq('track', 'InitiateCheckout', eventData, { eventID: `${PIXEL_ID}_${Date.now()}` });
+    (window as any).fbq('track', 'InitiateCheckout', eventData, { eventID: `${PIXEL_ID_OLD}_${Date.now()}` });
   } else {
     console.error('❌ Facebook Pixel não está disponível para trackPurchaseClick');
   }
@@ -104,6 +108,7 @@ export function trackPageView() {
   
   if (typeof window !== 'undefined' && (window as any).fbq) {
     console.log('✅ Enviando PageView para Facebook Pixel');
+    // PageView é enviado automaticamente na inicialização, mas podemos forçar se necessário
     (window as any).fbq('track', 'PageView');
   } else {
     console.error('❌ Facebook Pixel não está disponível');
@@ -116,10 +121,13 @@ export function trackViewContent(contentName: string) {
   
   if (typeof window !== 'undefined' && (window as any).fbq) {
     console.log('✅ Enviando ViewContent para Facebook Pixel');
-    (window as any).fbq('track', 'ViewContent', {
+    const eventData = {
       content_name: contentName,
       content_category: 'Education'
-    });
+    };
+    // Enviar para ambos os pixels
+    (window as any).fbq('track', 'ViewContent', eventData, { eventID: `${PIXEL_ID}_${Date.now()}` });
+    (window as any).fbq('track', 'ViewContent', eventData, { eventID: `${PIXEL_ID_OLD}_${Date.now()}` });
   } else {
     console.error('❌ Facebook Pixel não está disponível para trackViewContent');
   }
@@ -128,7 +136,8 @@ export function trackViewContent(contentName: string) {
 // Função para verificar se o Pixel está funcionando
 export function checkPixelStatus() {
   console.log('🔍 Verificando status do Facebook Pixel...');
-  console.log('Pixel ID:', PIXEL_ID);
+  console.log('Pixel ID (Novo):', PIXEL_ID);
+  console.log('Pixel ID (Antigo):', PIXEL_ID_OLD);
   console.log('Window disponível:', typeof window !== 'undefined');
   console.log('fbq disponível:', typeof window !== 'undefined' && (window as any).fbq);
   
@@ -160,6 +169,7 @@ export function ensurePixelLoaded() {
         if ((window as any).fbq) {
           console.log('✅ Facebook Pixel recarregado com sucesso');
           (window as any).fbq('init', PIXEL_ID);
+          (window as any).fbq('init', PIXEL_ID_OLD);
           (window as any).fbq('track', 'PageView');
         }
       }, 1000);
