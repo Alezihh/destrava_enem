@@ -1,8 +1,8 @@
 // Facebook Conversions API
 // IMPORTANTE: Este token pode expirar. Verifique no Facebook Business Manager
-const ACCESS_TOKEN = 'EAAQxPpZAWT1sBQB0sdj3eMor2kDEv3aklyy8SKHPHCEjuQWKHeDYuA8MvqDQLeR66RY1cZALykJZATQgMUfKQMZC5qgfjnqldWYjvrcVWVh23uN9tgFvFxoNV93FnIRCuclEhTSSxX1aWfyup3gdioyZCw0dLhWpHQQ3d2BGXpDr50SCuqLodCtWjzxUcGbIsggZDZD';
-const PIXEL_ID = '845736898104589';
 const PIXEL_ID_OLD = '1822278489164552'; // Pixel antigo
+const PIXEL_ID_THIRD = '1207950487964826'; // Terceiro pixel
+const ACCESS_TOKEN_THIRD = 'EAASsfLae6dkBQPBW4VOwOLxdHz2CXqZBnbGgd5oZAf78BxIhJE8doSR8aZCJnguH4pUSDx3ijhKeoDw5NKam7kGRWX33OGSfGqGfKA95yHQ33Cd6KZADTADf95k5SnfdVDcJeLxBxQJ39jW7q9yQHgS6PxkFYQfKbsySI6mq5qZBbVl5R50Gd0ZCbmFlOTG1kxPwZDZD'; // Token do terceiro pixel
 
 // Função para hash de email (SHA256)
 async function hashEmail(email: string): Promise<string> {
@@ -56,19 +56,20 @@ export async function sendConversionEvent(
       ]
     };
 
-    const response = await fetch(`https://graph.facebook.com/v18.0/${PIXEL_ID}/events`, {
+    // Enviar para o terceiro pixel
+    const responseThird = await fetch(`https://graph.facebook.com/v18.0/${PIXEL_ID_THIRD}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${ACCESS_TOKEN}`
+        'Authorization': `Bearer ${ACCESS_TOKEN_THIRD}`
       },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      console.error('Erro ao enviar evento de conversão:', await response.text());
+    if (!responseThird.ok) {
+      console.error('Erro ao enviar evento de conversão (terceiro pixel):', await responseThird.text());
     } else {
-      console.log('Evento de conversão enviado com sucesso:', eventName);
+      console.log('Evento de conversão enviado com sucesso (terceiro pixel):', eventName);
     }
   } catch (error) {
     console.error('Erro ao enviar evento de conversão:', error);
@@ -88,9 +89,9 @@ export function trackPurchaseClick(planType: 'basic' | 'complete', value: number
       value: value,
       currency: 'BRL'
     };
-    // Enviar para ambos os pixels
-    (window as any).fbq('track', 'InitiateCheckout', eventData, { eventID: `${PIXEL_ID}_${Date.now()}` });
+    // Enviar para todos os pixels
     (window as any).fbq('track', 'InitiateCheckout', eventData, { eventID: `${PIXEL_ID_OLD}_${Date.now()}` });
+    (window as any).fbq('track', 'InitiateCheckout', eventData, { eventID: `${PIXEL_ID_THIRD}_${Date.now()}` });
   } else {
     console.error('❌ Facebook Pixel não está disponível para trackPurchaseClick');
   }
@@ -125,9 +126,9 @@ export function trackViewContent(contentName: string) {
       content_name: contentName,
       content_category: 'Education'
     };
-    // Enviar para ambos os pixels
-    (window as any).fbq('track', 'ViewContent', eventData, { eventID: `${PIXEL_ID}_${Date.now()}` });
+    // Enviar para todos os pixels
     (window as any).fbq('track', 'ViewContent', eventData, { eventID: `${PIXEL_ID_OLD}_${Date.now()}` });
+    (window as any).fbq('track', 'ViewContent', eventData, { eventID: `${PIXEL_ID_THIRD}_${Date.now()}` });
   } else {
     console.error('❌ Facebook Pixel não está disponível para trackViewContent');
   }
@@ -136,8 +137,8 @@ export function trackViewContent(contentName: string) {
 // Função para verificar se o Pixel está funcionando
 export function checkPixelStatus() {
   console.log('🔍 Verificando status do Facebook Pixel...');
-  console.log('Pixel ID (Novo):', PIXEL_ID);
   console.log('Pixel ID (Antigo):', PIXEL_ID_OLD);
+  console.log('Pixel ID (Terceiro):', PIXEL_ID_THIRD);
   console.log('Window disponível:', typeof window !== 'undefined');
   console.log('fbq disponível:', typeof window !== 'undefined' && (window as any).fbq);
   
@@ -168,8 +169,8 @@ export function ensurePixelLoaded() {
       setTimeout(() => {
         if ((window as any).fbq) {
           console.log('✅ Facebook Pixel recarregado com sucesso');
-          (window as any).fbq('init', PIXEL_ID);
           (window as any).fbq('init', PIXEL_ID_OLD);
+          (window as any).fbq('init', PIXEL_ID_THIRD);
           (window as any).fbq('track', 'PageView');
         }
       }, 1000);
