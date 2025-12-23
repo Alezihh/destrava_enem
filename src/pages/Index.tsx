@@ -648,9 +648,9 @@ const Index = () => {
                 </div>
 
                 <div className="mb-6">
-                  <p className="text-muted-foreground line-through text-lg sm:text-xl">R$ 97,00</p>
-                  <p className="text-5xl sm:text-6xl font-extrabold text-foreground mb-1">R$ 9,90</p>
-                  <p className="text-sm sm:text-base text-muted-foreground">à vista</p>
+                  <p className="text-muted-foreground line-through text-lg">R$ 97,00</p>
+                  <p className="text-5xl sm:text-4xl font-extrabold text-foreground mb-1">R$ 9,90</p>
+                  <p className="text-sm text-muted-foreground">à vista</p>
                 </div>
 
                 <ul className="space-y-3 mb-6">
@@ -722,9 +722,9 @@ const Index = () => {
                 </div>
 
                 <div className="mb-6">
-                  <p className="text-muted-foreground line-through text-lg sm:text-xl">R$ 197,00</p>
-                  <p className="text-5xl sm:text-6xl font-extrabold text-primary mb-1">R$ 19,90</p>
-                  <p className="text-sm sm:text-base text-muted-foreground">à vista ou 12x de R$ 1,66</p>
+                  <p className="text-muted-foreground line-through text-lg">R$ 197,00</p>
+                  <p className="text-5xl sm:text-4xl font-extrabold text-primary mb-1">R$ 19,90</p>
+                  <p className="text-sm text-muted-foreground">à vista ou 12x de R$ 1,66</p>
                 </div>
 
                 <ul className="space-y-3 mb-6">
