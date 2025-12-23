@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, Clock, BookOpen, Trophy, Star, Shield, Zap, Download, Users, Target } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { CheckCircle2, Clock, BookOpen, Trophy, Star, Shield, Zap, Download, Users, Target, Check } from "lucide-react";
 import { trackPurchaseClick, trackPageView, trackViewContent, checkPixelStatus, ensurePixelLoaded } from "@/lib/facebook-api";
 // import heroImage from "@/assets/hero-student.jpg";
 // import testimonial1 from "@/assets/testimonial-1.jpg";
@@ -13,9 +14,14 @@ import { trackPurchaseClick, trackPageView, trackViewContent, checkPixelStatus, 
 const Index = () => {
   const [activeTestimonial, setActiveTestimonial] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [openModal, setOpenModal] = useState<string | null>(null);
 
   useEffect(() => {
     setIsVisible(true);
+    // Resetar erros de imagem ao montar
+    setImageErrors({});
+    
     const interval = setInterval(() => {
       setActiveTestimonial((prev) => (prev + 1) % 3);
     }, 5000);
@@ -37,6 +43,144 @@ const Index = () => {
 
   const scrollToCTA = () => {
     document.getElementById("cta-section")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  // Mapeamento de matérias para caminhos de imagens (garantindo caracteres especiais)
+  // Os arquivos estão em public/resumos/ e são servidos pelo Vite em /resumos/
+  const getImagePath = (subjectTitle: string): string => {
+    const imageMap: Record<string, string> = {
+      "Artes": "/resumos/Artes.webp",
+      "Biologia": "/resumos/Biologia.webp",
+      "Física": "/resumos/Física.webp",
+      "Química": "/resumos/Química.webp",
+      "Geografia": "/resumos/Geografia.webp",
+      "História": "/resumos/História.webp",
+      "Literatura": "/resumos/Literatura.webp",
+      "Português": "/resumos/Português.webp",
+      "Matemática": "/resumos/Matemática.webp",
+      "Sociologia": "/resumos/Sociologia.webp",
+      "Filosofia": "/resumos/Filosofia.webp",
+    };
+    const path = imageMap[subjectTitle] || `/resumos/${subjectTitle}.webp`;
+    // Usa encodeURI para garantir que caracteres especiais sejam tratados corretamente
+    // Isso é especialmente importante para arquivos com acentos como Física, Química, etc.
+    return encodeURI(path);
+  };
+
+  // Dados dos tópicos por matéria
+  const topicsData: Record<string, { category: string; topics: string[] }[]> = {
+    "Artes": [
+      { category: "Arte Pré-Histórica", topics: ["Arte Rupestre", "Arte Neolítica", "Arte Paleolítica"] },
+      { category: "Arte Antiga", topics: ["Arte Egípcia", "Arte Grega", "Arte Romana", "Arte Bizantina"] },
+      { category: "Arte Medieval", topics: ["Arte Gótica", "Arte Islâmica", "Arte Românica"] },
+      { category: "Arte Renascentista", topics: ["Renascimento Italiano", "Michelangelo", "Leonardo da Vinci", "Rafael"] },
+      { category: "Arte Moderna", topics: ["Impressionismo", "Cubismo", "Arte Abstrata", "Expressionismo", "Surrealismo"] },
+      { category: "Arte Brasileira", topics: ["Arte Colonial", "Modernismo Brasileiro", "Arte Barroca", "Semana de Arte Moderna"] },
+      { category: "Arte Contemporânea", topics: ["Pop Art", "Arte Digital", "Arte Conceitual", "Street Art"] },
+    ],
+    "Biologia": [
+      { category: "Bioquímica", topics: ["Águas e Sais", "Vitaminas", "Carboidratos e Lipídios", "Intolerância à Lactose", "Proteínas", "Ácido Nucleico"] },
+      { category: "Botânica", topics: ["Reino Plantae"] },
+      { category: "Citologia", topics: ["Organelas Citoplasmáticas", "Esp. Membrana", "Transporte Celular", "Respiração Celular", "Fotossíntese", "Mutações", "Câncer"] },
+      { category: "Embriologia", topics: ["Ovos e Segmentação", "Anexos Embrionários", "Embriologia"] },
+      { category: "Ecologia", topics: ["Ciclo do Nitrogênio", "Rel. Ecológicas", "Sucessão Ecológica", "Ecologia"] },
+      { category: "Evolução", topics: ["Origem da Vida", "Lamarck", "Darwin", "Especiação", "Evidências Evolutivas"] },
+      { category: "Fisiologia", topics: ["Sistema Digestório", "Sistema Respiratório", "Sistema Excretor", "Sistema Urinário", "Sistema Linfático", "Sistema Circulatório", "Sistema Nervoso", "Sistema Endócrino", "Ciclo Menstrual", "Métodos Contraceptivos", "Genital Masculino", "Genital Feminino", "Fecundação", "Gêmeos", "Espermatogênese"] },
+      { category: "Genética", topics: ["1ª Lei de Mendel", "Genética", "Sistema RH"] },
+      { category: "Histologia", topics: ["Epitélio", "Tecido Nervoso", "Tecido Muscular", "Tecido Conjuntivo"] },
+      { category: "Microbiologia", topics: ["Taxonomia e Sistemática", "Algas", "Bactérias", "Bacterioses", "Protozooses", "Micoses", "Viroses", "Coronavirus"] },
+      { category: "Zoologia", topics: ["Poríferos", "Celenterados", "Platelmintos", "Nematodeos", "Anfibios", "Répteis", "Aves", "Mamíferos", "Peixes"] },
+    ],
+    "Física": [
+      { category: "Calorimetria", topics: ["Calor", "Calorimetria"] },
+      { category: "Cinemática", topics: ["Movimento Uniforme", "MU Variado", "Queda Livre", "Lançamento Vertical", "Lançamentos", "Polias", "Cal. Vetores", "MCU", "Cinemática"] },
+      { category: "Dinâmica", topics: ["Forças", "Atrito", "Plano Inclinado", "Lei de Hooke", "Força Centrípeta", "Estática", "Newton"] },
+      { category: "Eletrostática", topics: ["Eletrostática"] },
+      { category: "Energia", topics: ["Trabalho", "Potência", "Estática"] },
+      { category: "Gravitação Universal", topics: ["Gravitação"] },
+      { category: "Mecânica Impulsiva", topics: ["Momento Linear", "Alavancas"] },
+      { category: "Ondulatória", topics: ["Ondas", "Ondulatória", "Som"] },
+      { category: "Termodinâmica", topics: ["Termodinâmica", "Termometria e Dilatometria", "Termologia"] },
+      { category: "Fórmulas de Física", topics: ["Fórmulas de Física"] },
+    ],
+    "Química": [
+      { category: "Cinética Química", topics: ["Cinética Química"] },
+      { category: "Dispersões", topics: ["Soluções", "Diluição", "Dispersões Coloidais"] },
+      { category: "Eletroquímica", topics: ["Pilha", "Eletrólise"] },
+      { category: "Equilíbrio Químico", topics: ["Equilíbrio Químico"] },
+      { category: "Estudo Físico dos Gases", topics: ["Gás Ideal"] },
+      { category: "Ligações Químicas", topics: ["Ligações Químicas", "Polaridade", "Hibridação", "Geometria Molecular"] },
+      { category: "Matéria e Energia", topics: ["Química Básica"] },
+      { category: "Química Ambiental", topics: ["Poluição Ambiental"] },
+      { category: "Química Inorgânica", topics: ["Ácidos", "Bases", "Óxidos", "Sais", "Nox", "Teorias Ácido-Base", "Balanceamento", "Reações Inorgânicas"] },
+      { category: "Química Orgânica", topics: ["Orgânica", "Isomeria", "Funções Orgânicas"] },
+      { category: "Transformações Químicas", topics: ["Modelos Atômicos", "Distribuição Eletrônica", "Classificação Periódica", "Propriedades Periódicas", "Análise Imediata"] },
+      { category: "Termoquímica", topics: ["Termoquímica"] },
+    ],
+    "Geografia": [
+      { category: "Geografia Física", topics: ["Clima", "Hidrografia", "Solos", "Relevo", "Vegetação", "Geologia"] },
+      { category: "Geografia Humana", topics: ["População", "Migração", "Crescimento Populacional", "Demografia", "Urbanização"] },
+      { category: "Geografia Econômica", topics: ["Economia", "Indústria", "Globalização", "Agropecuária", "Setor Terciário"] },
+      { category: "Geografia do Brasil", topics: ["Regionalização", "Características Regionais", "Regiões Brasileiras", "Recursos Naturais"] },
+      { category: "Geografia Mundial", topics: ["Continentes", "Países Subdesenvolvidos", "Países Desenvolvidos", "Blocos Econômicos"] },
+      { category: "Cartografia", topics: ["Mapas", "Projeções", "Escalas", "Coordenadas Geográficas"] },
+      { category: "Geopolítica", topics: ["Conflitos Mundiais", "Fronteiras", "Organização Mundial"] },
+    ],
+    "História": [
+      { category: "História Antiga", topics: ["Pré-História", "Egito Antigo", "Grécia Antiga", "Roma Antiga", "Idade Média"] },
+      { category: "História Moderna", topics: ["Renascimento", "Reformas Religiosas", "Absolutismo", "Iluminismo", "Revolução Francesa"] },
+      { category: "História Contemporânea", topics: ["Revolução Industrial", "Primeira Guerra Mundial", "Segunda Guerra Mundial", "Guerra Fria"] },
+      { category: "História do Brasil Colônia", topics: ["Descobrimento", "Colonização", "Economia Colonial", "Sociedade Colonial", "Inconfidência Mineira"] },
+      { category: "Brasil Império", topics: ["Independência", "Primeiro Reinado", "Período Regencial", "Segundo Reinado", "Abolição da Escravidão"] },
+      { category: "Brasil República", topics: ["República Velha", "Era Vargas", "Período Democrático", "Ditadura Militar", "Nova República"] },
+      { category: "América", topics: ["Colonização da América", "Independências Americanas", "História da América"] },
+    ],
+    "Literatura": [
+      { category: "Literatura Medieval", topics: ["Trovadorismo", "Humanismo"] },
+      { category: "Literatura Clássica", topics: ["Classicismo", "Arcadismo", "Barroco"] },
+      { category: "Literatura Romântica", topics: ["Romantismo", "1ª Geração Romântica", "2ª Geração Romântica", "3ª Geração Romântica"] },
+      { category: "Literatura Realista", topics: ["Realismo", "Parnasianismo", "Naturalismo"] },
+      { category: "Literatura Moderna", topics: ["Pré-Modernismo", "1ª Geração Modernista", "Modernismo", "2ª Geração Modernista"] },
+      { category: "Literatura Contemporânea", topics: ["3ª Geração Modernista", "Literatura Contemporânea"] },
+      { category: "Gêneros Literários", topics: ["Épico", "Dramático", "Lírico", "Figuras de Linguagem"] },
+    ],
+    "Português": [
+      { category: "Fonética e Fonologia", topics: ["Fonemas", "Encontros Consonantais", "Acentuação", "Encontros Vocálicos", "Dígrafos"] },
+      { category: "Morfologia", topics: ["Classes Gramaticais", "Adjetivo", "Verbos", "Substantivo", "Pronomes", "Advérbios"] },
+      { category: "Sintaxe", topics: ["Análise Sintática", "Período Composto", "Regência", "Período Simples", "Concordância", "Crase"] },
+      { category: "Semântica", topics: ["Significado das Palavras", "Homonímia", "Sinônimos", "Polissemia", "Paronímia", "Antônimos"] },
+      { category: "Redação", topics: ["Estrutura Textual", "Argumentação", "Coerência", "Dissertação", "Coesão"] },
+      { category: "Interpretação de Texto", topics: ["Compreensão Textual", "Gêneros Textuais", "Figuras de Linguagem"] },
+    ],
+    "Matemática": [
+      { category: "Álgebra", topics: ["Equações", "Inequações", "Sistemas Lineares", "Progressões", "Logaritmos", "Exponenciais"] },
+      { category: "Funções", topics: ["Função Afim", "Função Quadrática", "Função Exponencial", "Função Logarítmica", "Função Modular"] },
+      { category: "Geometria Plana", topics: ["Triângulos", "Quadriláteros", "Polígonos", "Circunferência", "Áreas", "Teorema de Pitágoras"] },
+      { category: "Geometria Espacial", topics: ["Prismas", "Pirâmides", "Cilindros", "Cones", "Esferas", "Volume", "Área Superficial"] },
+      { category: "Trigonometria", topics: ["Razões Trigonométricas", "Círculo Trigonométrico", "Funções Trigonométricas", "Identidades"] },
+      { category: "Estatística e Probabilidade", topics: ["Estatística Descritiva", "Probabilidade", "Análise Combinatória", "Permutações", "Combinações"] },
+      { category: "Matemática Financeira", topics: ["Porcentagem", "Juros Simples", "Juros Compostos", "Descontos"] },
+    ],
+    "Sociologia": [
+      { category: "Fundamentos da Sociologia", topics: ["Surgimento da Sociologia", "Objeto de Estudo", "Métodos Sociológicos"] },
+      { category: "Teorias Clássicas", topics: ["Auguste Comte", "Max Weber", "Émile Durkheim", "Karl Marx"] },
+      { category: "Estratificação Social", topics: ["Classes Sociais", "Desigualdade Social", "Mobilidade Social", "Pobreza"] },
+      { category: "Instituições Sociais", topics: ["Família", "Estado", "Trabalho", "Escola", "Religião"] },
+      { category: "Movimentos Sociais", topics: ["Movimentos Sociais", "Direitos Humanos", "Cidadania", "Democracia"] },
+      { category: "Sociedade Brasileira", topics: ["Formação Social", "Problemas Sociais", "Diversidade Cultural", "Mudanças Sociais"] },
+    ],
+    "Filosofia": [
+      { category: "Filosofia Antiga", topics: ["Pré-Socráticos", "Sócrates", "Platão", "Aristóteles", "Filosofia Helenística", "Estoicismo", "Epicurismo"] },
+      { category: "Filosofia Medieval", topics: ["Patrística", "Santo Agostinho", "Escolástica", "São Tomás de Aquino", "Filosofia Islâmica"] },
+      { category: "Filosofia Moderna", topics: ["René Descartes", "Racionalismo", "Empirismo", "John Locke", "David Hume", "Immanuel Kant", "Iluminismo"] },
+      { category: "Filosofia Contemporânea", topics: ["Hegel", "Nietzsche", "Existencialismo", "Sartre", "Fenomenologia", "Filosofia Analítica", "Pós-Modernismo"] },
+      { category: "Ética e Filosofia Moral", topics: ["Ética Aristotélica", "Ética Kantiana", "Utilitarismo", "Bioética", "Direitos Humanos"] },
+      { category: "Filosofia Política", topics: ["Contrato Social", "Hobbes", "Locke", "Rousseau", "Maquiavel", "Teorias da Justiça", "Democracia"] },
+      { category: "Teoria do Conhecimento", topics: ["Epistemologia", "Ceticismo", "Dogmatismo", "Criticismo", "Método Científico"] },
+      { category: "Lógica", topics: ["Lógica Aristotélica", "Silogismo", "Falácias", "Lógica Proposicional", "Argumentação"] },
+      { category: "Estética", topics: ["Filosofia da Arte", "Belo e Sublime", "Mimesis", "Arte e Realidade"] },
+      { category: "Filosofia Brasileira", topics: ["Pensadores Brasileiros", "Filosofia da Libertação", "Paulo Freire", "Filosofia Indígena"] },
+    ],
   };
 
   return (
@@ -318,6 +462,159 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Seção de Resumos */}
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-background">
+        <div className="container mx-auto max-w-7xl">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              Por que o Destrava ENEM é a melhor escolha?
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+              Tenha em mãos as ferramentas que já aprovaram milhares de estudantes e acelere sua jornada para a universidade.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                title: "Artes",
+                pages: 20,
+                description: "História da arte, movimentos artísticos, arte brasileira e contemporânea.",
+                topics: ["Arte Grega", "Barroco", "Expressionismo", "Arte Contemporânea", "Arte Brasileira"],
+              },
+              {
+                title: "Biologia",
+                pages: 108,
+                description: "Corpo humano, citologia, botânica, zoologia, genética, evolução e ecologia.",
+                topics: ["Corpo Humano", "Citologia", "Botânica", "Zoologia", "Genética", "Evolução", "Ecologia"],
+              },
+              {
+                title: "Física",
+                pages: 51,
+                description: "Cinemática, dinâmica, termologia, ondas, eletricidade e gravitação.",
+                topics: ["Cinemática", "Dinâmica", "Termologia", "Ondas", "Eletricidade", "Gravitação"],
+              },
+              {
+                title: "Química",
+                pages: 61,
+                description: "Química geral, física, orgânica e ambiental.",
+                topics: ["Química Geral", "Química Física", "Química Orgânica", "Química Ambiental"],
+              },
+              {
+                title: "Geografia",
+                pages: 63,
+                description: "Clima, relevo, hidrografia, vegetação, população, economia e regionalização do Brasil e do mundo.",
+                topics: ["Clima", "Relevo", "Hidrografia", "Vegetação", "População", "Economia", "Regionalização"],
+              },
+              {
+                title: "História",
+                pages: 77,
+                description: "História da Antiguidade até o Brasil Contemporâneo.",
+                topics: ["Antiguidade", "Idade Média", "Idade Moderna", "Idade Contemporânea", "Brasil Colônia", "Brasil Império", "Brasil República"],
+              },
+              {
+                title: "Literatura",
+                pages: 18,
+                description: "Escolas literárias e evolução da literatura brasileira.",
+                topics: ["Escolas Literárias", "Literatura Brasileira", "Movimentos Literários", "Autores Clássicos"],
+              },
+              {
+                title: "Português",
+                pages: 15,
+                description: "Gramática prática para interpretação e produção de texto.",
+                topics: ["Gramática", "Interpretação", "Produção de Texto", "Análise Textual"],
+              },
+              {
+                title: "Matemática",
+                pages: 19,
+                description: "Funções, geometria plana, estatística e matemática financeira.",
+                topics: ["Funções", "Geometria Plana", "Estatística", "Matemática Financeira", "Álgebra"],
+              },
+              {
+                title: "Sociologia",
+                pages: 12,
+                description: "Fundamentos da sociologia e teorias clássicas e modernas.",
+                topics: ["Fundamentos", "Teorias Clássicas", "Teorias Modernas", "Sociologia Brasileira"],
+              },
+              {
+                title: "Filosofia",
+                pages: 14,
+                description: "História da filosofia, ética, política e filosofia contemporânea.",
+                topics: ["História da Filosofia", "Ética", "Política", "Filosofia Contemporânea"],
+              },
+            ].map((subject, index) => (
+              <Card 
+                key={index} 
+                className="border-2 border-border shadow-card hover:shadow-primary transition-all duration-500 hover:scale-105 group overflow-hidden"
+              >
+                <CardContent className="p-6">
+                  <div className="mb-4 h-48 bg-gradient-to-br from-primary/10 via-primary/5 to-secondary/10 rounded-lg flex items-center justify-center overflow-hidden relative group-hover:shadow-lg transition-shadow">
+                    {!imageErrors[index] ? (
+                      <img 
+                        src={getImagePath(subject.title)} 
+                        alt={`Resumo de ${subject.title}`}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                        onError={(e) => {
+                          const imagePath = getImagePath(subject.title);
+                          console.error(`Erro ao carregar imagem: ${imagePath}`, e);
+                          // Marca como erro para mostrar o fallback
+                          setImageErrors(prev => ({ ...prev, [index]: true }));
+                        }}
+                        onLoad={() => {
+                          const imagePath = getImagePath(subject.title);
+                          console.log(`Imagem carregada com sucesso: ${imagePath}`);
+                        }}
+                      />
+                    ) : (
+                      <>
+                        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0YzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCAxLjc5IDQgNCA0IDQtMS43OSA0LTR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-30"></div>
+                        <BookOpen className="w-20 h-20 text-primary/40 group-hover:scale-110 group-hover:text-primary/60 transition-all duration-300 relative z-10" />
+                      </>
+                    )}
+                  </div>
+                  
+                  <h3 className="text-2xl font-bold mb-3 group-hover:text-primary transition-colors">
+                    {subject.title}
+                  </h3>
+                  
+                  <p className="text-muted-foreground text-sm mb-4 leading-relaxed min-h-[3rem]">
+                    {subject.description}
+                  </p>
+                  
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm font-semibold text-primary">
+                      {subject.pages} páginas
+                    </span>
+                  </div>
+                  
+                  <Button 
+                    className="w-full bg-green-600 hover:bg-green-700 text-white transition-colors"
+                    onClick={() => {
+                      setOpenModal(subject.title);
+                    }}
+                  >
+                    Ver tópicos abordados →
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <div className="bg-muted/50 rounded-2xl p-8 max-w-4xl mx-auto">
+              <h3 className="text-2xl font-bold mb-4">Estude Onde Estiver</h3>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Download className="w-6 h-6 text-primary" />
+                <p className="text-lg text-muted-foreground">
+                  Todos os resumos são otimizados para visualização no celular, tablet e computador. Baixe uma vez e acesse offline sempre que precisar.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Oferta e Bônus */}
       <section id="cta-section" className="py-8 sm:py-12 md:py-16 lg:py-20 px-3 sm:px-4 md:px-6 lg:px-8">
         <div className="container mx-auto max-w-7xl">
@@ -352,7 +649,7 @@ const Index = () => {
 
                 <div className="mb-6">
                   <p className="text-muted-foreground line-through text-lg">R$ 97,00</p>
-                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">R$ 19,90</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">R$ 9,90</p>
                   <p className="text-sm text-muted-foreground">à vista</p>
                 </div>
 
@@ -385,7 +682,7 @@ const Index = () => {
                   size="lg" 
                   className="w-full hover:scale-105 transition-transform duration-300 text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
-                    trackPurchaseClick('basic', 19.90);
+                    trackPurchaseClick('basic', 9.90);
                     window.open('https://pay.kirvano.com/96c9b222-7fb1-4c47-94b4-bcb71bfca89b', '_blank');
                   }}
                 >
@@ -426,8 +723,8 @@ const Index = () => {
 
                 <div className="mb-6">
                   <p className="text-muted-foreground line-through text-lg">R$ 197,00</p>
-                  <p className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">R$ 39,90</p>
-                  <p className="text-sm text-muted-foreground">à vista ou 12x de R$ 3,33</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">R$ 19,90</p>
+                  <p className="text-sm text-muted-foreground">à vista ou 12x de R$ 1,66</p>
                 </div>
 
                 <ul className="space-y-3 mb-6">
@@ -483,7 +780,7 @@ const Index = () => {
                   size="lg" 
                   className="w-full hover:scale-110 transition-transform duration-300 shadow-glow text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
-                    trackPurchaseClick('complete', 39.90);
+                    trackPurchaseClick('complete', 19.90);
                     window.open('https://pay.kirvano.com/5b48cfd1-b093-4f1d-9969-e49c5d96da26', '_blank');
                   }}
                 >
@@ -580,7 +877,7 @@ const Index = () => {
             Não Deixe o Medo Vencer Você
           </h2>
           <p className="text-xl sm:text-2xl text-primary-foreground/90 mb-8 leading-relaxed">
-            Você tem potencial. Você é capaz. Só precisa destravar o que te impede de brilhar. Comece hoje mesmo por apenas R$ 19,90.
+            Você tem potencial. Você é capaz. Só precisa destravar o que te impede de brilhar. Comece hoje mesmo por apenas R$ 9,90.
           </p>
           <Button 
             variant="hero" 
@@ -609,6 +906,60 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Modal de Tópicos */}
+      <Dialog open={openModal !== null} onOpenChange={(open) => !open && setOpenModal(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto bg-background dark:bg-gray-900">
+          {openModal && topicsData[openModal] && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-3xl font-bold mb-2 text-foreground">
+                  Tópicos de {openModal}
+                </DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground">
+                  Veja todos os tópicos abordados nos resumos desta disciplina
+                </DialogDescription>
+              </DialogHeader>
+              
+              <div className="mt-6 space-y-6">
+                {topicsData[openModal].map((category, catIndex) => (
+                  <div key={catIndex} className="space-y-3">
+                    <h3 className="text-lg font-bold text-green-600 dark:text-green-500">
+                      {category.category}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {category.topics.map((topic, topicIndex) => (
+                        <div 
+                          key={topicIndex} 
+                          className="flex items-center gap-2 p-2 rounded-md bg-muted/50 dark:bg-gray-800 hover:bg-muted dark:hover:bg-gray-700 transition-colors"
+                        >
+                          <Check className="w-4 h-4 text-green-600 dark:text-green-500 flex-shrink-0" />
+                          <span className="text-sm text-foreground">{topic}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+              
+              <div className="mt-8 pt-6 border-t border-border space-y-4">
+                <p className="text-center text-muted-foreground">
+                  Todos esses tópicos estão inclusos nos resumos de {openModal}
+                </p>
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700 text-white text-lg py-6 font-bold"
+                  onClick={() => {
+                    setOpenModal(null);
+                    scrollToCTA();
+                  }}
+                >
+                  QUERO TER ACESSO A TODOS OS RESUMOS
+                </Button>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Footer */}
       <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t">
