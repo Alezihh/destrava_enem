@@ -352,7 +352,7 @@ const Index = () => {
 
                 <div className="mb-6">
                   <p className="text-muted-foreground line-through text-lg">R$ 97,00</p>
-                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">R$ 9,99</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-foreground mb-1">R$ 19,90</p>
                   <p className="text-sm text-muted-foreground">à vista</p>
                 </div>
 
@@ -385,7 +385,7 @@ const Index = () => {
                   size="lg" 
                   className="w-full hover:scale-105 transition-transform duration-300 text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
-                    trackPurchaseClick('basic', 9.99);
+                    trackPurchaseClick('basic', 19.90);
                     window.open('https://pay.kirvano.com/96c9b222-7fb1-4c47-94b4-bcb71bfca89b', '_blank');
                   }}
                 >
@@ -426,8 +426,8 @@ const Index = () => {
 
                 <div className="mb-6">
                   <p className="text-muted-foreground line-through text-lg">R$ 197,00</p>
-                  <p className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">R$ 19,90</p>
-                  <p className="text-sm text-muted-foreground">à vista ou 12x de R$ 2,49</p>
+                  <p className="text-3xl sm:text-4xl font-extrabold text-primary mb-1">R$ 39,90</p>
+                  <p className="text-sm text-muted-foreground">à vista ou 12x de R$ 3,33</p>
                 </div>
 
                 <ul className="space-y-3 mb-6">
@@ -483,7 +483,7 @@ const Index = () => {
                   size="lg" 
                   className="w-full hover:scale-110 transition-transform duration-300 shadow-glow text-sm sm:text-base px-4 sm:px-6 py-3 sm:py-4"
                   onClick={() => {
-                    trackPurchaseClick('complete', 19.90);
+                    trackPurchaseClick('complete', 39.90);
                     window.open('https://pay.kirvano.com/5b48cfd1-b093-4f1d-9969-e49c5d96da26', '_blank');
                   }}
                 >
@@ -580,7 +580,7 @@ const Index = () => {
             Não Deixe o Medo Vencer Você
           </h2>
           <p className="text-xl sm:text-2xl text-primary-foreground/90 mb-8 leading-relaxed">
-            Você tem potencial. Você é capaz. Só precisa destravar o que te impede de brilhar. Comece hoje mesmo por apenas R$ 9,99.
+            Você tem potencial. Você é capaz. Só precisa destravar o que te impede de brilhar. Comece hoje mesmo por apenas R$ 19,90.
           </p>
           <Button 
             variant="hero" 
